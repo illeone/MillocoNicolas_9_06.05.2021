@@ -20,6 +20,25 @@ export default class NewBill {
     const file = this.document.querySelector(`input[data-testid="file"]`).files[0]
     const filePath = e.target.value.split(/\\/g)
     const fileName = filePath[filePath.length-1]
+    
+//*//
+    const inputElement = this.document.querySelector(`input[data-testid="file"]`);
+    const errorMessageElement = this.document.querySelector('#file-error-message');
+    const submitButton = this.document.querySelector('#btn-send-bill');
+    if(['image/jpeg', 'image/jpg', 'image/png'].includes(file.type)) {
+      inputElement.classList.add('valid-file-input');
+      inputElement.classList.remove('invalid-file-input');
+      errorMessageElement.textContent = '';
+      submitButton.disabled = false;
+    } else {
+      inputElement.classList.remove("valid-file-input");
+      inputElement.classList.add('invalid-file-input');
+      errorMessageElement.textContent = 'Type de fichier invalide. Veuillez télécharger une image JPEG, JPG ou PNG.';
+      submitButton.disabled = true;
+      return
+    }
+//*//   
+
     const formData = new FormData()
     const email = JSON.parse(localStorage.getItem("user")).email
     formData.append('file', file)
