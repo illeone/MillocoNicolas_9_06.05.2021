@@ -96,4 +96,22 @@ describe("Given I am connected as an employee", () => {
 
     })
   });
+
+  describe("When the getBills method is called", () => {
+    test("Then it should return the bills formatted in an array", async () => {
+      const billsContainer = new Bills({
+        document,
+        onNavigate: () => {},
+        store: mockStore,
+        localStorage: window.localStorage
+      });
+  
+      const result = await billsContainer.getBills();
+  
+      expect(result).toBeDefined();
+      expect(result).toBeInstanceOf(Array);
+
+    });
+  });
+  
 });
