@@ -64,4 +64,36 @@ describe("Given I am connected as an employee", () => {
       expect(screen.getByTestId("form-new-bill")).toBeTruthy();
     });
   });  
+  describe("When I click on the eye icon", () => {
+    test("Then a modal should open with the correct bill URL", () => {
+      $.fn.modal = jest.fn();
+      const billsPage = BillsUI({ data: bills });
+
+      const onNavigate = (pathname) => {
+        document.body.innerHTML = ROUTES({ pathname });
+      };
+
+      document.body.innerHTML = billsPage;
+      const billContainer = new Bills({
+        document,
+        onNavigate,
+        mockStore,
+       localStorage: window.localStorage
+      }
+      );
+
+      const iconEye = screen.getAllByTestId('icon-eye');
+      const firstIconEye = iconEye[0];
+      userEvent.click(firstIconEye);
+
+      const billModal =  screen.getByTestId("modaleFile");
+      const billUrl = firstIconEye.getAttribute('data-bill-url').split('?')[0];
+
+      // console.log(billModal);
+      expect(billModal).toBeTruthy();
+      expect(billModal.innerHTML.includes(billUrl)).toBeTruthy();
+      expect($.fn.modal).toHaveBeenCalled();
+
+    })
+  });
 });
