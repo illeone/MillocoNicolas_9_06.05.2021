@@ -146,5 +146,19 @@ describe("Given I am a user connected as Employee", () => {
       document.body.appendChild(root)
       router()
     })
+
+    test("fetches bills from an API and fails with 404 message error", async () => {
+      await  mockStore.bills.mockImplementationOnce(() => {
+          return {
+            list : () =>  {
+              return Promise.reject(new Error("Erreur 404"))
+            }
+          }})
+        window.onNavigate(ROUTES_PATH.Bills)
+        await new Promise(process.nextTick);
+        document.body.innerHTML = BillsUI({error:"Erreur 404"})
+        const message =  screen.getByText(/Erreur 404/)
+        expect(message).toBeTruthy()
+    })
   })
 });
