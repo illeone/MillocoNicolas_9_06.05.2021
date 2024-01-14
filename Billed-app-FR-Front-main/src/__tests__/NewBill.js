@@ -4,7 +4,7 @@
 import { localStorageMock } from "../__mocks__/localStorage.js"
 import { ROUTES, ROUTES_PATH } from "../constants/routes"
 import router from "../app/Router"
-import { screen } from "@testing-library/dom"
+import { fireEvent, screen } from "@testing-library/dom"
 import NewBillUI from "../views/NewBillUI.js"
 import NewBill from "../containers/NewBill.js"
 import userEvent from "@testing-library/user-event";
@@ -68,3 +68,37 @@ describe("Given I am connected as an employee", () => {
     })
   })
 });
+
+// test d'intégration POST
+describe("Given I am connected as an employee", () => {
+  describe("When I submit the new bill form", () => {
+    test("Then handleSubmit should be called and the store should update the bills", async () => {
+      const newBillUiHTML = NewBillUI();
+
+      window.localStorage.setItem('user', JSON.stringify({ 
+        type: 'Employee', 
+        email: "test@test.com" }));
+      document.body.innerHTML = newBillUiHTML;
+
+      const onNavigate = (pathname) => { 
+        document.body.innerHTML = ROUTES({ pathname }) 
+      };
+      const container = new NewBill({
+        document: document,
+        onNavigate: onNavigate,
+        store: mockStore,
+        localStorage: window.localStorage
+      });
+
+      const handleSubmitSpy = jest.spyOn(container, "handleSubmit");
+      const updateSpy = jest.spyOn(mockStore.bills(), 'update');
+      const form = document.querySelector(`form[data-testid="form-new-bill"]`);
+      form.addEventListener('submit', handleSubmitSpy);
+      fireEvent.submit(form);
+
+      expect(handleSubmitSpy).toHaveBeenCalled();
+      expect(updateSpy).toHaveBeenCalled();
+    });
+  });
+});
+
